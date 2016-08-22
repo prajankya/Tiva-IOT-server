@@ -1,0 +1,28 @@
+{
+  "name": "tiva-iot-server",
+  "version": "1.0.0",
+  "description": "Nodejs based Tiva launchpad http server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prajankya/Tiva-IOT-server.git"
+  },
+  "keywords": [
+    "tiva",
+    "launchpad",
+    "1294",
+    "node",
+    "http",
+    "webclient"
+  ],
+  "author": "Team 1",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/prajankya/Tiva-IOT-server/issues"
+  },
+  "homepage": "https://github.com/prajankya/Tiva-IOT-server#readme"
+}
