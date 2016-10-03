@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
-
+var request = require('request');
 var ips = [];
 
 app.use("/add/:ip", function(req, res, next) {
@@ -14,6 +14,12 @@ app.use("/button/:no/:state", function(req, res, next) {
     console.log("button : " + req.params.no + " is " + req.params.state);
     for (var i = 0; i < ips.length; i++) {
         console.log(ips[i]);
+        request('http://' + ips[i] + '/LED_' + req.params.no + '_' + req.params.state, function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                console.log(body) // Show the HTML for the Google homepage.
+            }
+        })
+
     }
     res.end("done");
 });

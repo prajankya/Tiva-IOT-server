@@ -131,16 +131,16 @@ void loop() {
         }
 
         // Check to see if the client request was "GET /H" or "GET /L":
-        if (currentLine.endsWith("GET /LED1_H")) {
+        if (currentLine.endsWith("GET /LED_1_on")) {
           digitalWrite(D1_LED, HIGH);
         }
-        if (currentLine.endsWith("GET /LED1_L")) {
+        if (currentLine.endsWith("GET /LED_1_off")) {
           digitalWrite(D1_LED, LOW);
         }
-        if (currentLine.endsWith("GET /LED2_H")) {
+        if (currentLine.endsWith("GET /LED_2_on")) {
           digitalWrite(D2_LED, HIGH);
         }
-        if (currentLine.endsWith("GET /LED2_L")) {
+        if (currentLine.endsWith("GET /LED_2_off")) {
           digitalWrite(D2_LED, LOW);
         }
       }
