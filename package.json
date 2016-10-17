@@ -1,6 +1,6 @@
 {
   "name": "tiva-iot-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Node.js based Tiva launchpad http server",
   "main": "server.js",
   "scripts": {
