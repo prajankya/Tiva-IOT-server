@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/prajankya/Tiva-IOT-server#readme",
   "dependencies": {
-    "array.prototype.find": "^2.0.0",
+    "array-unique": "^0.3.2",
     "body-parser": "^1.15.2",
     "electron-packager": "^8.3.0",
     "electron-prebuilt": "^1.4.10",

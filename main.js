@@ -20,7 +20,7 @@ app.on('ready', () => {
 
     global.win.loadURL(`file://${__dirname}/app/index.html`)
 
-    //win.webContents.openDevTools()
+    //global.win.webContents.openDevTools()
 
     global.win.on('closed', () => {
         global.win = null

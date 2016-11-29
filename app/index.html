@@ -4,18 +4,49 @@
 <head>
     <meta charset="utf-8">
     <title>Tiva IOT Server</title>
-
+    <base href="http://localhost:3000/">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
 
     <script src="/bower_components/angular/angular.min.js"></script>
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
 </head>
 
 <body ng-app="app">
     <div ng-controller="AppCtrl" layout="column" ng-cloak>
+        <div class="container">
+            <div class="jumbotron">
+                <h1>Tiva-IOT-Server</h1>
+                <p>A Tool to control multiple Tiva Launchpad boards remotely.</p>
+            </div>
+            <ul class="list-group col-xs-12 col-sm-4">
+                <li ng-repeat="b in boards" class="list-group-item">
+                    Board {{$index}}
+                    <span class="badge">{{b}}</span>
+                </li>
+            </ul>
+        </div>
     </div>
+    <script>
+        const {
+            ipcRenderer,
+            remote
+        } = require('electron')
+
+        angular.module('app', [])
+            .controller('AppCtrl', function($scope, $http) {
+                $scope.boards = []
+
+                ipcRenderer.on('ips', (event, arg) => {
+                    $scope.$apply(function() {
+                        $scope.boards = arg
+                    })
+                    console.log(arg);
+                })
+            })
+    </script>
 </body>
 
 </html>
