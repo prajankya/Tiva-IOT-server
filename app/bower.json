@@ -1,0 +1,22 @@
+{
+  "name": "tiva_iot",
+  "homepage": "https://github.com/prajankya/Tiva-IOT-server",
+  "authors": [
+    "Prajankya <prajankya@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "angularjs#^1.5.9",
+    "bootstrap": "^3.3.7"
+  }
+}
