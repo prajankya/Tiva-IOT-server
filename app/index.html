@@ -11,7 +11,35 @@
     <script src="/bower_components/angular/angular.min.js"></script>
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <style>
+        .ip_list {
+            cursor: pointer;
+        }
 
+        .ip_list:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #3498db;
+            /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body ng-app="app">
@@ -22,11 +50,74 @@
                 <p>A Tool to control multiple Tiva Launchpad boards remotely.</p>
             </div>
             <ul class="list-group col-xs-12 col-sm-4">
-                <li ng-repeat="b in boards" class="list-group-item">
+                <li ng-click="select($index, b)" ng-repeat="b in boards" class="ip_list list-group-item" ng-class="{'active': b == currentItem}">
                     Board {{$index}}
                     <span class="badge">{{b}}</span>
                 </li>
             </ul>
+            <div class="col-xs-12 col-sm-8" ng-if="currentItem.name">
+                <h2>{{currentItem.name}} <small>({{currentItem.ip}})</small></h2>
+                <hr style="height:2px;background-color:rgba(0,0,0,0.2)">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-primary" ng-click="digitalRead()">
+                        Digital Read
+                      </button>
+                    </div>
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-primary" ng-click="digitalWrite()">
+                        Digital Write
+                      </button>
+                    </div>
+
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-danger" ng-click="analogRead()">
+                        Analog Read
+                      </button>
+                    </div>
+
+                    <div class="col-xs-3">
+                        <button type="button" class="btn btn-danger" ng-click="analogWrite()">
+                        Analog Write
+                      </button>
+                    </div>
+                </div>
+                <br>
+                <div class="row" ng-if='showInputs==true'>
+                    <div class="col-xs-6">
+                        <label for="pinNo">Pin No:</label>
+                        <input type="text" class="form-control" ng-model="pinNo" id="pinNo" placeholder="Enter a Pin Number">
+                    </div>
+                    <div class="col-xs-6" ng-if="showValue==true">
+                        <label for="value">Value:</label>
+                        <input type="text" class="form-control" ng-model="pinValue" id="pinValue" placeholder="Enter the value to set">
+                    </div>
+                </div>
+                <br>
+                <div class="row" ng-if='showInputs==true'>
+                    <div class="col-xs-5">
+                    </div>
+                    <div class="col-xs-2">
+                        <button type="button" class="btn-lg btn-success" ng-click="send()">
+                          Send
+                        </button>
+                    </div>
+                    <div class="col-xs-5">
+                    </div>
+                </div>
+                <div class="row" ng-if='showInputs==true'>
+                    <div class="col-xs-4">
+                    </div>
+                    <div class="col-xs-4">
+                        <div>
+                            <div ng-if="loading==true" class="loader"></div>
+                        </div>
+                        <h1>Reply : {{result}}</h1>
+                    </div>
+                    <div class="col-xs-4">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -38,13 +129,73 @@
         angular.module('app', [])
             .controller('AppCtrl', function($scope, $http) {
                 $scope.boards = []
+                $scope.currentItem = 'a'
+                $scope.loading = false
 
                 ipcRenderer.on('ips', (event, arg) => {
                     $scope.$apply(function() {
                         $scope.boards = arg
                     })
-                    console.log(arg);
                 })
+
+                $scope.select = function(index, item) {
+                    $scope.currentItem = {}
+                    $scope.currentItem.name = "Board " + index;
+                    $scope.currentItem.ip = item;
+
+                    document.getElementById('pinNo').value = null;
+                    if (document.getElementById('pinValue')) {
+                        document.getElementById('pinValue').value = null;
+                    }
+                    $scope.showInputs = false;
+                    $scope.showValue = false;
+                    $scope.result = null;
+                }
+                $scope.digitalRead = function() {
+                    $scope.showInputs = true
+                    $scope.showValue = false
+                    $scope.fun = "digitalRead"
+                }
+                $scope.digitalWrite = function() {
+                    $scope.showInputs = true
+                    $scope.showValue = true
+                    $scope.fun = "digitalWrite"
+                }
+                $scope.analogRead = function() {
+                    $scope.showInputs = true
+                    $scope.showValue = false
+                    $scope.fun = "analogRead"
+                }
+                $scope.analogWrite = function() {
+                    $scope.showInputs = true
+                    $scope.showValue = true
+                    $scope.fun = "analogWrite"
+                }
+
+                $scope.send = function() {
+                    var url = "http://" + $scope.currentItem.ip;
+                    url += '/' + $scope.fun;
+                    var pin = document.getElementById('pinNo').value;
+
+                    url += '/' + pin
+
+                    if (document.getElementById('pinValue')) {
+                        var val = document.getElementById('pinValue').value;
+                        url += '/' + val
+                    }
+
+                    $scope.loading = true
+
+                    $http
+                        .get(url)
+                        .then(function(d) {
+                            $scope.loading = false;
+                            $scope.result = d.data;
+                        }, function(e) {
+                            $scope.loading = false;
+                            $scope.result = e.data;
+                        })
+                }
             })
     </script>
 </body>
