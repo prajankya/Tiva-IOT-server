@@ -9,6 +9,9 @@ var ex_app = express()
 var server = require('http').createServer(ex_app)
 var request = require('request')
 
+const fs = require('fs')
+const path = require('path')
+
 global.ips = ['1.1.1.1']
 
 app.on('ready', () => {
@@ -45,6 +48,11 @@ app.on('activate', () => {
 
 ipcMain.on('getIP', (event, arg) => {
     event.returnValue = global.serverIP
+})
+
+ipcMain.on('getCode', (event, arg) => {
+    var s = fs.readFileSync(path.join(__dirname, 'TIVA-IOT-Arduino', 'TIVA-IOT-Arduino.ino'))
+    event.returnValue = String(s)
 })
 
 require('./server')(ex_app)

@@ -8,8 +8,10 @@
     <script src="/bower_components/jquery2/jquery.min.js"></script>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/highlight/styles/default.css" />
 
     <script src="/bower_components/angular/angular.min.js"></script>
+    <script src="/highlight/highlight.pack.js"></script>
     <style>
         .ip_list {
             cursor: pointer;
@@ -42,6 +44,10 @@
         .col-centered {
             float: none;
             margin: 0 auto;
+        }
+
+        .arduino {
+            font-size: 20px;
         }
     </style>
 </head>
@@ -140,8 +146,8 @@
         </div>
 
         <!-- Modal -->
-        <div id="codeModal" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
+        <div id="codeModal" class="modal  fade" role="dialog">
+            <div class="modal-dialog modal-lg large">
 
                 <!-- Modal content-->
                 <div class="modal-content">
@@ -150,11 +156,11 @@
                         <h4 class="modal-title">Copy this Code to energia and Upload</h4>
                     </div>
                     <div class="modal-body">
-                        <textarea disabled="disabled">
-                          //------------------------------------------
-
-
-                        </textarea>
+                        <pre>
+                          <code class="arduino">
+                            {{tivaCode}}
+                          </code>
+                        </pre>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -173,10 +179,12 @@
 
         angular.module('app', [])
             .controller('AppCtrl', function($scope, $http) {
+                hljs.initHighlightingOnLoad();
                 $scope.boards = []
                 $scope.currentItem = 'a'
                 $scope.loading = false
                 $scope.serverIP = ipcRenderer.sendSync('getIP')
+                $scope.tivaCode = ipcRenderer.sendSync('getCode')
 
                 ipcRenderer.on('ips', (event, arg) => {
                     $scope.$apply(function() {
