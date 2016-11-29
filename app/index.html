@@ -5,12 +5,11 @@
     <meta charset="utf-8">
     <title>Tiva IOT Server</title>
     <base href="http://localhost:3000/">
+    <script src="/bower_components/jquery2/jquery.min.js"></script>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
 
     <script src="/bower_components/angular/angular.min.js"></script>
-    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <style>
         .ip_list {
             cursor: pointer;
@@ -39,6 +38,11 @@
                 transform: rotate(360deg);
             }
         }
+
+        .col-centered {
+            float: none;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
@@ -48,6 +52,21 @@
             <div class="jumbotron">
                 <h1>Tiva-IOT-Server</h1>
                 <p>A Tool to control multiple Tiva Launchpad boards remotely.</p>
+            </div>
+            <br>
+            <div class="row" class="col-sm-8 col-centered">
+                <div class="col-xs-4">
+                    <button type="button" class="btn btn-primary" ng-click="getCode()">
+                      Get TivaBoard Code
+                    </button>
+                </div>
+                <div class="col-xs-8">
+                    <h3><b>Server IP address:</b> {{serverIP}}</h3>
+                </div>
+            </div>
+            <br>
+            <div ng-if="boards.length==0" class="col-sm-8 col-centered">
+                <i><b>No Boards Found</b> Please Reset the board to get detected here</i>
             </div>
             <ul class="list-group col-xs-12 col-sm-4">
                 <li ng-click="select($index, b)" ng-repeat="b in boards" class="ip_list list-group-item" ng-class="{'active': b == currentItem}">
@@ -119,7 +138,33 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div id="codeModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Copy this Code to energia and Upload</h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea disabled="disabled">
+                          //------------------------------------------
+
+
+                        </textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script>
         const {
             ipcRenderer,
@@ -131,13 +176,16 @@
                 $scope.boards = []
                 $scope.currentItem = 'a'
                 $scope.loading = false
+                $scope.serverIP = ipcRenderer.sendSync('getIP')
 
                 ipcRenderer.on('ips', (event, arg) => {
                     $scope.$apply(function() {
                         $scope.boards = arg
                     })
                 })
-
+                $scope.getCode = function() {
+                    $("#codeModal").modal()
+                }
                 $scope.select = function(index, item) {
                     $scope.currentItem = {}
                     $scope.currentItem.name = "Board " + index;

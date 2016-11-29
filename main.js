@@ -9,7 +9,7 @@ var ex_app = express()
 var server = require('http').createServer(ex_app)
 var request = require('request')
 
-global.ips = []
+global.ips = ['1.1.1.1']
 
 app.on('ready', () => {
     // Create the browser window.
@@ -43,6 +43,10 @@ app.on('activate', () => {
     }
 })
 
+ipcMain.on('getIP', (event, arg) => {
+    event.returnValue = global.serverIP
+})
+
 require('./server')(ex_app)
 
 
@@ -69,6 +73,7 @@ server.listen(ex_app.get('port'), function() {
             } else {
                 // this interface has only one ipv4 adress
                 console.log(iface.address);
+                global.serverIP = iface.address;
             }
             ++alias;
         });
