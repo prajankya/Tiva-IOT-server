@@ -51,8 +51,12 @@ ipcMain.on('getIP', (event, arg) => {
 })
 
 ipcMain.on('getCode', (event, arg) => {
-    var s = fs.readFileSync(path.join(__dirname, 'TIVA-IOT-Arduino', 'TIVA-IOT-Arduino.ino'))
-    event.returnValue = String(s)
+    var s = String(fs.readFileSync(path.join(__dirname, 'TIVA-IOT-Arduino', 'TIVA-IOT-Arduino.ino')))
+    var prev = s.substring(0, s.indexOf('server(') + 7)
+    s = s.substring(s.indexOf('server(') + 7)
+    var after = s.substring(s.indexOf(')'))
+    var ip = global.serverIP.split(".").join(', ')
+    event.returnValue = (prev + ip + after)
 })
 
 require('./server')(ex_app)
