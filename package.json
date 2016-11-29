@@ -2,10 +2,10 @@
   "name": "tiva-iot-server",
   "version": "2.0.0",
   "description": "Node.js based Tiva launchpad http server",
-  "main": "server.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "DEBUG=* nodemon ."
+    "start": "node main.js"
   },
   "repository": {
     "type": "git",
