@@ -5,7 +5,7 @@ void printEthernetData();
 
 
 EthernetServer self(80);
-IPAddress server(10,4,2,62);
+IPAddress server(10, 4, 2, 62);
 EthernetClient myNode;
 
 EthernetClient client;
@@ -29,15 +29,15 @@ void setup() {
     Serial.println("connected");
     IPAddress ip = Ethernet.localIP();
 
-    String ip_address="";
-    for(byte thisByte=0;thisByte < 4;thisByte++){
+    String ip_address = "";
+    for (byte thisByte = 0; thisByte < 4; thisByte++) {
       ip_address += String(ip[thisByte], DEC);
-      if(thisByte < 3){
+      if (thisByte < 3) {
         ip_address += ".";
       }
     }
 
-    String s=String("GET /add/") + ip_address + String(" HTTP/1.0");
+    String s = String("GET /add/") + ip_address + String(" HTTP/1.0");
     myNode.println(s);
     myNode.println();
   }
@@ -49,90 +49,45 @@ boolean f_1 = false, f_2 = false;
 void loop() {
   client = self.available();
 
-  if(digitalRead(PUSH1) && f_1 == false){
-    Serial.println("Push1_release");
-    f_1 = true;
-    if (myNode.connect(server, 3000)) {
-      Serial.println("Server connected");
-      myNode.println("GET /button/1/off HTTP/1.0");
-      myNode.println();
-    }
-  }
-  else{
-    if(digitalRead(PUSH1)==0 && f_1==true){
-      Serial.println("Push1_press");
-      if (myNode.connect(server, 3000)) {
-        Serial.println("Server connected");
-        myNode.println("GET /button/1/on HTTP/1.0");
-        myNode.println();
-      }
-      f_1 = false;
-    }
-  }
-  if(digitalRead(PUSH2) && f_2 == false){
-    Serial.println("Push2_release");
-    f_2 = true;
-    if (myNode.connect(server, 3000)) {
-      Serial.println("Server connected");
-      myNode.println("GET /button/2/off HTTP/1.0");
-      myNode.println();
-    }
-  }
-  else{
-    if(digitalRead(PUSH2)==0 && f_2==true){
-      Serial.println("Push2_press");
-      if (myNode.connect(server, 3000)) {
-        Serial.println("Server connected");
-        myNode.println("GET /button/2/on HTTP/1.0");
-        myNode.println();
-      }
-      f_2 = false;
-    }
-  }
-
-  if (client) { 
-    Serial.print("new client on port "); 
+  if (client) {
+    Serial.print("new client on port ");
     Serial.println(client.port());
-    String currentLine = "";    
-    boolean newConnection = true; 
+
+    boolean newConnection = true;
     unsigned long connectionActiveTimer;
 
     while (client.connected()) {
-      if (newConnection){
+      if (newConnection) {
         connectionActiveTimer = millis();
         newConnection = false;
       }
-      if (!newConnection && connectionActiveTimer + 1000 < millis()){
+
+      if (!newConnection && connectionActiveTimer + 10000 < millis()) {
         break;
       }
 
       if (client.available()) {
-        char c = client.read();
-        Serial.print(c);
-        if (c == '\n') {
-          if (currentLine.length() == 0) {
-            break;
-          }          
-          else { 
-            currentLine = "";
-          }
-        }
-        else if (c != '\r') {
-          currentLine += c;
+        String line = client.readString();
+
+        //Serial.println(line);
+        String s = line.substring(line.indexOf('GET') + 3, line.indexOf('HTTP') - 3);
+        Serial.println(s);
+        String fun = s.substring(0, s.indexOf('/'));
+        String pin = s.substring(s.indexOf('/') + 1);
+        String val = "0";
+        if (pin.indexOf('/') >= 0) {
+          val = pin.substring(pin.indexOf('/') + 1);
+          pin = pin.substring(0, pin.indexOf('/'));
         }
 
-        if (currentLine.endsWith("GET /LED_1_on")) {
-          digitalWrite(D1_LED, HIGH);
-        }
-        if (currentLine.endsWith("GET /LED_1_off")) {
-          digitalWrite(D1_LED, LOW);
-        }
-        if (currentLine.endsWith("GET /LED_2_on")) {
-          digitalWrite(D2_LED, HIGH);
-        }
-        if (currentLine.endsWith("GET /LED_2_off")) {
-          digitalWrite(D2_LED, LOW);
-        }
+        int pin_ = pin.toInt();
+        int val_ = val.toInt();
+
+        Serial.println("Fun:" + fun + "\tPin:" + pin + "\tVal:" + val_);
+        String out = runFun(fun, pin_, val_);
+        Serial.println("Out : " + out);
+        client.println(out);
+        client.stop();
       }
     }
     client.stop();
@@ -140,6 +95,21 @@ void loop() {
   }
 }
 
+String runFun(String f, int pin, int val) {
+  if (f == "analogRead") {
+    return String(analogRead(pin));
+  } else if (f == "analogWrite") {
+    analogWrite(pin, val);
+    return "done";
+  } else if (f == "digitalRead") {
+    return String(digitalRead(pin));
+  } else if (f == "digitalWrite") {
+    digitalWrite(pin, val);
+    return "done";
+  }else{
+    return "Illegal Function";
+  }
+}
 
 
 void printEthernetData() {
