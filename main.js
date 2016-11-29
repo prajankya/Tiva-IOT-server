@@ -9,7 +9,7 @@ var ex_app = express()
 var server = require('http').createServer(ex_app)
 var request = require('request')
 
-global.ips = ['1.1.1.1', '2.2.2.2']
+global.ips = []
 
 app.on('ready', () => {
     // Create the browser window.

@@ -112,7 +112,7 @@
                         <div>
                             <div ng-if="loading==true" class="loader"></div>
                         </div>
-                        <h1>Reply : {{result}}</h1>
+                        <h1 ng-if="result!=null">Reply : {{result}}</h1>
                     </div>
                     <div class="col-xs-4">
                     </div>
