@@ -12,13 +12,13 @@ var request = require('request')
 const fs = require('fs')
 const path = require('path')
 
-global.ips = ['1.1.1.1']
+global.ips = []
 
 app.on('ready', () => {
     // Create the browser window.
     global.win = new BrowserWindow({
-        width: 800,
-        height: 600
+        width: 980,
+        height: 760
     })
 
     global.win.loadURL(`file://${__dirname}/app/index.html`)
